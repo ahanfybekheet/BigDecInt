@@ -16,7 +16,6 @@ class BigDecInt{
         BigDecInt operator+(BigDecInt);
         BigDecInt operator-(BigDecInt);
         void operator=(BigDecInt);
-        bool operator>(BigDecInt);
         bool operator<(BigDecInt);
         bool operator==(BigDecInt);
         int operator[](int);

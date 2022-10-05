@@ -93,11 +93,14 @@ bool BigDecInt::operator<(BigDecInt num_2){
             return false;
         }
         else{
-            for(int i=0;i<BigDecInt::size();i++){
-                if(num[BigDecInt::size()-i]<num_2[BigDecInt::size()-i]){
+            int i=0;
+            do
+            {
+                if(num[BigDecInt::size()-i-1]<num_2[BigDecInt::size()-i-1]){
                     return false;
                 }
-            }
+            } while (num[BigDecInt::size()-i]==num_2[BigDecInt::size()-i]);
+            
         }
         return true;
     }else{
@@ -107,11 +110,14 @@ bool BigDecInt::operator<(BigDecInt num_2){
             return true;
         }
         else{
-            for(int i=0;i<BigDecInt::size();i++){
-                if(num[BigDecInt::size()-i]<num_2[BigDecInt::size()-i]){
+            int i=0;
+            do
+            {
+                if(num[BigDecInt::size()-i-1]<num_2[BigDecInt::size()-i-1]){
                     return true;
                 }
-            }
+            } while (num[BigDecInt::size()-i]==num_2[BigDecInt::size()-i]);
+            
         }
         return false;
     }
@@ -130,44 +136,6 @@ bool BigDecInt::operator==(BigDecInt num_2){
     return true;
 }
 
-
-bool BigDecInt::operator>(BigDecInt num_2){
-    if (BigDecInt::sign() == -1 &&num_2.sign()==1){
-        return false;
-    }else if (BigDecInt::sign() == 1 &&num_2.sign()== -1){
-        return true;
-    }else if(BigDecInt::sign() == -1 &&num_2.sign()== -1){
-        if (BigDecInt::size()>num_2.size()){
-            return false;
-        }else if(BigDecInt::size()<num_2.size()){
-            return true;
-        }
-        else{
-            for(int i=0;i<BigDecInt::size();i++){
-                if(num[BigDecInt::size()-i]>num_2[BigDecInt::size()-i]){
-                    return false;
-                }
-            }
-        }
-        return true;
-    }else{
-        if (BigDecInt::size()>num_2.size()){
-            return true;
-        }else if(BigDecInt::size()<num_2.size()){
-            return false;
-        }
-        else{
-            for(int i=0;i<BigDecInt::size();i++){
-                if(num[BigDecInt::size()-i]>num_2[BigDecInt::size()-i]){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-
-}
 ostream& operator<<(ostream& ouput,BigDecInt num){
     
     if (num.sign()==-1){
@@ -178,13 +146,20 @@ ostream& operator<<(ostream& ouput,BigDecInt num){
     }
     return ouput;
 }
-
+// BigDecInt BigDecInt::operator-(BigDecInt num_2){
+    
+// }
+bool operator>(BigDecInt num,BigDecInt num_2){
+    return !(num<num_2&&!(num==num_2));
+}
 
 int main() {
-    BigDecInt x("");
-    BigDecInt y("");
+    BigDecInt x("-21345");
+    BigDecInt y("-13245");
     BigDecInt z= x+y;
-    cout<<(x<y);
+    cout<<(x>y);
+    int temp;
+    cin>>temp;
 
 
 
