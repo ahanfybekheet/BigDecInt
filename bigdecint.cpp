@@ -27,6 +27,12 @@ BigDecInt::BigDecInt(string str_num){
                 break;
             num.push_back(int(str_num[str_num.size()-1-i])-48);
         }
+    }else if(str_num[0] == '+'){
+        for(int i=0;i<str_num.size();i++){
+            if (i==str_num.size()-1)
+                break;
+            num.push_back(int(str_num[str_num.size()-1-i])-48);
+        }
     }
     else{
         for(int i=0;i<str_num.size();i++){
@@ -42,38 +48,8 @@ int BigDecInt::size(){
 int BigDecInt::sign(){
     return num_sign;
 }
-int BigDecInt::operator[](int i){
-    return num[i];
-}
-
-BigDecInt BigDecInt::operator+(BigDecInt num_2){
-    BigDecInt res("");
-    int bigger = max(BigDecInt::size(),num_2.size());
-    if(BigDecInt::size()>num_2.size()){
-        for(int i=0;i<=BigDecInt::size()-num_2.size();i++){
-            num_2.num.push_back(0);
-        }
-    }
-    if(BigDecInt::size()<num_2.size()){
-        for(int i=0;i<=num_2.size()-BigDecInt::size();i++){
-            num.push_back(0);
-        }
-    }
-
-    
-    for(int i=0;i<bigger;i++){
-        int temp = (num.at(i)+num_2[i])%10;
-        int carry=(num.at(i)+num_2[i])/10;
-        res.num.push_back(temp);
-        if (i==bigger-1){
-            if(carry!=0){
-                res.num.push_back(carry);
-            }
-        }else{
-            num.at(i+1)+=carry;
-        }
-    }
-    return res;
+int& BigDecInt::operator[](int i){
+    return num.at(i);
 }
 
 void BigDecInt::operator=(BigDecInt num_2){
@@ -99,7 +75,8 @@ bool BigDecInt::operator<(BigDecInt num_2){
                 if(num[BigDecInt::size()-i-1]<num_2[BigDecInt::size()-i-1]){
                     return false;
                 }
-            } while (num[BigDecInt::size()-i]==num_2[BigDecInt::size()-i]);
+                i++;
+            } while (num[BigDecInt::size()-i]==num_2[BigDecInt::size()-i] && i<BigDecInt::size());
             
         }
         return true;
@@ -116,11 +93,16 @@ bool BigDecInt::operator<(BigDecInt num_2){
                 if(num[BigDecInt::size()-i-1]<num_2[BigDecInt::size()-i-1]){
                     return true;
                 }
-            } while (num[BigDecInt::size()-i]==num_2[BigDecInt::size()-i]);
+                i++;
+            } while (num[BigDecInt::size()-i]==num_2[BigDecInt::size()-i] && i<BigDecInt::size());
             
         }
         return false;
     }
+}
+
+void BigDecInt::push_back(int i){
+    num.push_back(i);
 }
 
 bool BigDecInt::operator==(BigDecInt num_2){
@@ -141,25 +123,108 @@ ostream& operator<<(ostream& ouput,BigDecInt num){
     if (num.sign()==-1){
         ouput<<'-';
     }
+    bool first_zeros=true;
     for(int i=1;i<=num.size();i++){
-        ouput<<num[num.size()-i];
+        if(num[num.size()-i]!=0){
+            first_zeros=false;
+        }
+        if(!first_zeros){
+            ouput<<num[num.size()-i];
+        }
     }
     return ouput;
 }
-// BigDecInt BigDecInt::operator-(BigDecInt num_2){
-    
-// }
+BigDecInt operator-(BigDecInt num,BigDecInt num_2){
+    BigDecInt res("");
+
+    if(num.sign()==-1){
+        res = num+num_2;
+        res.num_sign = -1;
+        return res;
+    }
+
+    if(num_2.sign() == -1){
+        res = num+num_2;
+        return res;
+    }
+    if(num<num_2){
+        res = num_2 - num;
+        res.num_sign = -1;
+        return res;
+
+    }
+    if(num.size()>num_2.size()){
+        int z = num.size() - num_2.size();
+        for(int i=0;i<z;i++){
+            num_2.push_back(0);
+        }
+    }
+    if(num.size()<num_2.size()){
+        int z = num.size() - num_2.size();
+        for(int i=0;i<z;i++){
+            num.push_back(0);
+        }
+    }
+
+    for(int i=0;i<num.size();i++){
+        if(num[i]<num_2[i]){
+            num[i]+=10;
+            num[i+1]--;
+        }
+            res.push_back(num[i]-num_2[i]);
+    }
+    return res;
+}
+
+BigDecInt operator+(BigDecInt num,BigDecInt num_2){
+    BigDecInt res("");
+    if(num.size()>num_2.size()){
+        for(int i=0;i<=num.size()-num_2.size();i++){
+            num_2.push_back(0);
+        }
+    }
+    if(num.size()<num_2.size()){
+        for(int i=0;i<=num_2.size()-num.size();i++){
+            num.push_back(0);
+        }
+    }
+
+    if(num.sign()==-1){
+        res = num_2 -num;
+        return res;
+    }
+
+
+    for(int i=0;i<num.size();i++){
+        int temp = (num[i]+num_2[i])%10;
+        int carry=(num[i]+num_2[i])/10;
+        res.num.push_back(temp);
+        if (i==num.size()-1){
+            if(carry!=0){
+                res.num.push_back(carry);
+            }
+        }else{
+            num[i+1]+=carry;
+        }
+    }
+    return res;
+}
 bool operator>(BigDecInt num,BigDecInt num_2){
     return !(num<num_2&&!(num==num_2));
 }
 
 int main() {
-    BigDecInt x("-21345");
-    BigDecInt y("-13245");
-    BigDecInt z= x+y;
-    cout<<(x>y);
-    int temp;
-    cin>>temp;
+    BigDecInt num1("123456789012345678901234567890"); 
+    BigDecInt num2("+113456789011345678901134567890"); 
+    BigDecInt num3("-200000000000000000000000000000"); 
+    BigDecInt num4 = num2 + num1; 
+    BigDecInt num5 = num3 - num2; 
+    cout << "num1 = " << num1 << endl; 
+    cout << "num2 = " << num2 << endl; 
+    //Next statement will print 236913578023691357802369135780 
+    cout << "num2 + num1 = " << num4 << endl;
+    //Next statement will print -313456789011345678901134567890
+    cout << "num2 - num1 = " << num5 << endl;
 
 
 

@@ -13,12 +13,12 @@ class BigDecInt{
         BigDecInt(string);
         int size();
         int sign();
-        BigDecInt operator+(BigDecInt);
-        BigDecInt operator-(BigDecInt);
         void operator=(BigDecInt);
         bool operator<(BigDecInt);
         bool operator==(BigDecInt);
-        int operator[](int);
-
+        int& operator[](int);
+        void push_back(int);
+        friend BigDecInt operator-(BigDecInt,BigDecInt);
+        friend BigDecInt operator+(BigDecInt,BigDecInt);
 
 };
